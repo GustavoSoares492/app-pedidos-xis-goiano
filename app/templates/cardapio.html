@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block titulo %}Cardápio – Xis Goiano{% endblock %}
+{% block conteudo %}
+  {% for produto in produtos %}
+    <article class="produto">
+      <div class="linha">
+        <h2>{{ produto.nome }}</h2>
+        <span class="preco">{{ produto.preco | brl }}</span>
+      </div>
+      {% if produto.descricao %}<p>{{ produto.descricao }}</p>{% endif %}
+    </article>
+  {% else %}
+    <p>Nenhum produto disponível no momento.</p>
+  {% endfor %}
+{% endblock %}
