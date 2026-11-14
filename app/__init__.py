@@ -20,6 +20,12 @@ def create_app(config=None):
     from .routes import bp
     app.register_blueprint(bp)
 
+    @app.cli.command("seed")
+    def seed():
+        """Cadastra os produtos de exemplo do cardápio."""
+        from .seed import semear_produtos
+        print(f"{semear_produtos()} produto(s) cadastrado(s).")
+
     with app.app_context():
         db.create_all()
 
