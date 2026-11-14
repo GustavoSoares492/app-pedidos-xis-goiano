@@ -16,7 +16,11 @@ def create_app(config=None):
 
     db.init_app(app)
 
+    from . import models  # noqa: F401  (registra as tabelas)
     from .routes import bp
     app.register_blueprint(bp)
+
+    with app.app_context():
+        db.create_all()
 
     return app
