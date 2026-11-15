@@ -5,15 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block titulo %}Xis Goiano{% endblock %}</title>
   <style>
-    :root { --bg:#fbf7ee; --card:#ffffff; --ink:#1a1a1a; --mut:#555049; --line:#d9d2c0; --acc:#f5b301; }
+    :root { --escala:1; --bg:#fbf7ee; --card:#ffffff; --ink:#1a1a1a; --mut:#555049; --line:#d9d2c0; --acc:#f5b301; }
     @media (prefers-color-scheme: dark) {
       :root { --bg:#121214; --card:#1d1d21; --ink:#f4f1ea; --mut:#bdb8aa; --line:#3a3a40; }
     }
-    body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 system-ui, "Segoe UI", sans-serif; }
+    html[data-contraste="alto"] { --bg:#000000; --card:#000000; --ink:#ffffff; --mut:#ffffff; --line:#ffffff; --acc:#ffff00; }
+    html { font-size: calc(16px * var(--escala)); }
+    body { margin:0; background:var(--bg); color:var(--ink); font:1rem/1.5 system-ui, "Segoe UI", sans-serif; }
     main { max-width:560px; margin:0 auto; padding:0 16px 32px; }
     header { border-bottom:4px solid var(--acc); padding:16px 0; margin-bottom:16px; }
     h1 { margin:0; font-size:1.4rem; }
+    :focus-visible { outline:3px solid #ff8a00; outline-offset:2px; }
+    .pular { position:absolute; left:-999px; top:0; background:var(--acc); color:#1a1a1a; padding:12px 16px; font-weight:700; z-index:10; }
+    .pular:focus { left:8px; top:8px; }
+    .ferramentas { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; margin-bottom:8px; }
+    .ferramentas button { min-height:44px; min-width:44px; padding:8px 14px; border:2px solid var(--ink); border-radius:10px; background:var(--card); color:var(--ink); font:inherit; font-weight:700; cursor:pointer; }
+    .ferramentas button[aria-pressed="true"] { background:var(--acc); color:#1a1a1a; border-color:var(--acc); }
     .produto { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:12px; }
+    html[data-contraste="alto"] .produto { border-width:2px; }
     .produto h2 { font-size:1.05rem; margin:0; }
     .produto p { margin:4px 0 0; color:var(--mut); }
     .preco { font-weight:800; }
@@ -21,9 +30,36 @@
   </style>
 </head>
 <body>
-  <main>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+  <main id="conteudo" tabindex="-1">
+    <nav class="ferramentas" aria-label="Ferramentas de acessibilidade">
+      <button type="button" id="btn-fonte-menos" aria-label="Diminuir tamanho do texto">A−</button>
+      <button type="button" id="btn-fonte-mais" aria-label="Aumentar tamanho do texto">A+</button>
+      <button type="button" id="btn-contraste" aria-pressed="false">Alto contraste</button>
+    </nav>
     <header><h1>Xis Goiano</h1><p>Pedidos de delivery</p></header>
     {% block conteudo %}{% endblock %}
   </main>
+  <script>
+    (function () {
+      var raiz = document.documentElement, CHAVE = "xg-acessibilidade";
+      var estado = { escala: 1, alto: false };
+      try {
+        var salvo = JSON.parse(localStorage.getItem(CHAVE));
+        if (salvo) { estado.escala = salvo.escala || 1; estado.alto = !!salvo.alto; }
+      } catch (e) {}
+      function aplicar() {
+        raiz.style.setProperty("--escala", estado.escala);
+        if (estado.alto) { raiz.setAttribute("data-contraste", "alto"); }
+        else { raiz.removeAttribute("data-contraste"); }
+        document.getElementById("btn-contraste").setAttribute("aria-pressed", String(estado.alto));
+        try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch (e) {}
+      }
+      document.getElementById("btn-fonte-mais").onclick = function () { estado.escala = Math.min(1.75, estado.escala + 0.25); aplicar(); };
+      document.getElementById("btn-fonte-menos").onclick = function () { estado.escala = Math.max(1, estado.escala - 0.25); aplicar(); };
+      document.getElementById("btn-contraste").onclick = function () { estado.alto = !estado.alto; aplicar(); };
+      aplicar();
+    })();
+  </script>
 </body>
 </html>
