@@ -17,7 +17,10 @@ def create_app(config=None):
     db.init_app(app)
 
     from . import models  # noqa: F401  (registra as tabelas)
+    from .formatos import formatar_reais
     from .routes import bp
+
+    app.add_template_filter(formatar_reais, "brl")
     app.register_blueprint(bp)
 
     @app.cli.command("seed")
