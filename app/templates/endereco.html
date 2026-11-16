@@ -3,10 +3,13 @@
 {% block estilos %}{% include "_estilos_pedido.html" %}{% endblock %}
 {% block conteudo %}
   {% macro campo(nome, rotulo, limite, tipo="text", obrigatorio=True) %}
-    <label for="{{ nome }}">{{ rotulo }}{% if obrigatorio %} *{% endif %}</label>
+    <label for="{{ nome }}">{{ rotulo }}{% if obrigatorio %} <span class="obrig">(obrigatório)</span>{% endif %}</label>
     <input type="{{ tipo }}" id="{{ nome }}" name="{{ nome }}" maxlength="{{ limite }}" value="{{ dados.get(nome, '') }}"{% if nome in erros %} aria-invalid="true" aria-describedby="erro_{{ nome }}"{% endif %}>
-    {% if nome in erros %}<p class="erro" id="erro_{{ nome }}">{{ erros[nome] }}</p>{% endif %}
+    {% if nome in erros %}<p class="erro" id="erro_{{ nome }}"><span class="icone" aria-hidden="true">&#9888;</span>{{ erros[nome] }}</p>{% endif %}
   {% endmacro %}
+
+  <p class="passo">Passo 2 de 2: informe a entrega</p>
+  <p class="legenda">Os campos marcados com (obrigatório) precisam ser preenchidos para enviar o pedido.</p>
 
   <section class="resumo" aria-label="Resumo do pedido">
     <strong>Resumo do pedido</strong>
@@ -18,7 +21,7 @@
     <strong>Total: {{ total | brl }}</strong>
   </section>
 
-  {% if erros %}<p class="aviso" role="alert">Corrija os campos indicados para enviar o pedido.</p>{% endif %}
+  {% if erros %}<p class="aviso" role="alert"><span class="icone" aria-hidden="true">&#9888;</span> Corrija os campos indicados para enviar o pedido.</p>{% endif %}
 
   <form method="post" action="{{ url_for('main.registrar_pedido') }}" novalidate>
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -37,4 +40,8 @@
       <button type="submit" class="btn">Enviar pedido</button>
     </div>
   </form>
+  <script>
+    var primeiroErro = document.querySelector('[aria-invalid="true"]');
+    if (primeiroErro) { primeiroErro.focus(); }
+  </script>
 {% endblock %}
