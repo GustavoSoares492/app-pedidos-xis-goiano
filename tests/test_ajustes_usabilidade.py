@@ -23,7 +23,7 @@ def test_cardapio_mostra_passo_1_e_botao_com_destino(client, xis):
 def test_endereco_mostra_passo_2_e_marca_campos_obrigatorios(client, xis):
     html = client.post("/revisar", data={f"qtd_{xis.id}": "1"}).get_data(as_text=True)
     assert "Passo 2 de 2" in html
-    assert html.count("(obrigatório)") == 5
+    assert html.count('class="obrig"') == 5
     assert "Referência (opcional)" in html
 
 
