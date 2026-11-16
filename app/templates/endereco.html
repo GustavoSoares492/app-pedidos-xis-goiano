@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block titulo %}Endereço – Xis Goiano{% endblock %}
+{% block estilos %}{% include "_estilos_pedido.html" %}{% endblock %}
+{% block conteudo %}
+  {% macro campo(nome, rotulo, limite, tipo="text", obrigatorio=True) %}
+    <label for="{{ nome }}">{{ rotulo }}{% if obrigatorio %} *{% endif %}</label>
+    <input type="{{ tipo }}" id="{{ nome }}" name="{{ nome }}" maxlength="{{ limite }}" value="{{ dados.get(nome, '') }}"{% if nome in erros %} aria-invalid="true" aria-describedby="erro_{{ nome }}"{% endif %}>
+    {% if nome in erros %}<p class="erro" id="erro_{{ nome }}">{{ erros[nome] }}</p>{% endif %}
+  {% endmacro %}
+
+  <section class="resumo" aria-label="Resumo do pedido">
+    <strong>Resumo do pedido</strong>
+    <ul>
+      {% for item in itens %}
+        <li>{{ item.quantidade }} × {{ item.produto.nome }}{% if item.observacao %} ({{ item.observacao }}){% endif %}</li>
+      {% endfor %}
+    </ul>
+    <strong>Total: {{ total | brl }}</strong>
+  </section>
+
+  {% if erros %}<p class="aviso" role="alert">Corrija os campos indicados para enviar o pedido.</p>{% endif %}
+
+  <form method="post" action="{{ url_for('main.registrar_pedido') }}" novalidate>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% for item in itens %}
+      <input type="hidden" name="qtd_{{ item.produto.id }}" value="{{ item.quantidade }}">
+      <input type="hidden" name="obs_{{ item.produto.id }}" value="{{ item.observacao }}">
+    {% endfor %}
+    {{ campo("nome", "Nome", 100) }}
+    {{ campo("telefone", "Telefone com DDD", 20, "tel") }}
+    {{ campo("rua", "Rua", 120) }}
+    {{ campo("numero", "Número", 10) }}
+    {{ campo("bairro", "Bairro", 80) }}
+    {{ campo("referencia", "Referência (opcional)", 120, "text", False) }}
+    <div class="acoes">
+      <a class="btn sec" href="{{ url_for('main.cardapio') }}">Voltar ao cardápio</a>
+      <button type="submit" class="btn">Enviar pedido</button>
+    </div>
+  </form>
+{% endblock %}

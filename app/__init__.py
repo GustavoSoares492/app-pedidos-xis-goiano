@@ -1,8 +1,10 @@
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf.csrf import CSRFProtect
 
 db = SQLAlchemy()
+csrf = CSRFProtect()
 
 
 def create_app(config=None):
@@ -15,6 +17,7 @@ def create_app(config=None):
         app.config.update(config)
 
     db.init_app(app)
+    csrf.init_app(app)
 
     from . import models  # noqa: F401  (registra as tabelas)
     from .formatos import formatar_reais
