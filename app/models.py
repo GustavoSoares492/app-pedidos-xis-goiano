@@ -15,6 +15,11 @@ class Produto(db.Model):
     preco = db.Column(db.Numeric(8, 2), nullable=False)
     ativo = db.Column(db.Boolean, nullable=False, default=True)
 
+    @classmethod
+    def ativos(cls):
+        """Produtos que aparecem no cardápio, em ordem alfabética."""
+        return cls.query.filter_by(ativo=True).order_by(cls.nome).all()
+
 
 class Cliente(db.Model):
     id = db.Column(db.Integer, primary_key=True)

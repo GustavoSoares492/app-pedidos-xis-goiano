@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block titulo %}Pedido recebido – Xis Goiano{% endblock %}
+{% block estilos %}{% include "_estilos_pedido.html" %}{% endblock %}
+{% block conteudo %}
+  <section class="ok" role="status">
+    <h2>Pedido recebido</h2>
+    <p>Pedido nº {{ pedido.id }} · {{ pedido.total | brl }}</p>
+    <ul style="text-align:left">
+      {% for item in pedido.itens %}
+        <li>{{ item.quantidade }} × {{ item.produto.nome }}{% if item.observacao_item %} ({{ item.observacao_item }}){% endif %}</li>
+      {% endfor %}
+    </ul>
+    <p>Entrega em {{ pedido.rua }}, {{ pedido.numero }} – {{ pedido.bairro }}.</p>
+    <a class="btn" href="{{ url_for('main.cardapio') }}">Fazer novo pedido</a>
+  </section>
+{% endblock %}
