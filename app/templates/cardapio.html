@@ -2,7 +2,9 @@
 {% block titulo %}Cardápio – Xis Goiano{% endblock %}
 {% block estilos %}{% include "_estilos_pedido.html" %}{% endblock %}
 {% block conteudo %}
-  {% if erro %}<p class="aviso" role="alert">{{ erro }}</p>{% endif %}
+  <p class="passo">Passo 1 de 2: escolha seus itens</p>
+  <p class="legenda">Toque em + para adicionar. Depois, toque em “Continuar para o endereço”.</p>
+  {% if erro %}<p class="aviso" role="alert"><span class="icone" aria-hidden="true">&#9888;</span> {{ erro }}</p>{% endif %}
   <form method="post" action="{{ url_for('main.revisar') }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     {% for produto in produtos %}
@@ -17,13 +19,13 @@
           <input type="number" id="qtd_{{ produto.id }}" name="qtd_{{ produto.id }}" min="0" max="20" inputmode="numeric" value="{{ valores.get('qtd_' ~ produto.id, 0) }}" aria-label="Quantidade de {{ produto.nome }}">
           <button type="button" class="btn" data-passo="1" data-alvo="qtd_{{ produto.id }}" aria-label="Aumentar {{ produto.nome }}">+</button>
         </div>
-        <label for="obs_{{ produto.id }}">Observações</label>
+        <label for="obs_{{ produto.id }}">Observações (opcional)</label>
         <input type="text" id="obs_{{ produto.id }}" name="obs_{{ produto.id }}" maxlength="200" placeholder="Ex.: sem cebola" value="{{ valores.get('obs_' ~ produto.id, '') }}">
       </article>
     {% else %}
       <p>Nenhum produto disponível no momento.</p>
     {% endfor %}
-    {% if produtos %}<button type="submit" class="btn">Continuar</button>{% endif %}
+    {% if produtos %}<button type="submit" class="btn">Continuar para o endereço</button>{% endif %}
   </form>
   <script>
     document.querySelectorAll("[data-passo]").forEach(function (b) {
